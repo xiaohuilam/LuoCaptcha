@@ -8,7 +8,7 @@ https://luosimao.com/service/captcha
 
 # INSTALL
 ```
-composer require 233sec/laravel-luosimao
+composer require xiaohuilam/luo-captcha
 ```
 ```
 vim .env
@@ -29,5 +29,4 @@ Luosimao\Captcha\LuoCaptchaServiceProvider::class,
 ![11.png](https://ooo.0o0.ooo/2016/12/10/584bc01638108.png)
 ![12.png](https://ooo.0o0.ooo/2016/12/10/584bc01638be4.png)
 
-Most code fork from:   https://github.com/ARCANEDEV/noCAPTCHA
 
