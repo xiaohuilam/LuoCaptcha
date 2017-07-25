@@ -117,7 +117,7 @@ class LuoCaptcha{
         return $this->siteKey;
     }
 
-    protected function setRequest(\Xiaohuilam\LuoCaptcha\Utils\LuoCaptchaRequestInterface $request)
+    protected function setRequest(LuoCaptchaRequestInterface $request)
     {
         $this->request = $request;
         return $this;
@@ -126,7 +126,7 @@ class LuoCaptcha{
     /**
      * 发送验证请求
      */
-    public function sendVerifyRequest($params)
+    protected function sendVerifyRequest($params)
     {
         $client   = new Client();
         $resposne = $client->send('POST', self::VERIFY_URL, [
