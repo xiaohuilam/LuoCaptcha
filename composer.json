@@ -1,0 +1,32 @@
+{
+    "name": "xiaohuilam/luo-captcha",
+    "type": "library",
+    "authors": [
+      {
+        "name": "xiaohuilam"
+      }
+    ],
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "require": {
+        "php":                    ">=5.6",
+        "ext-curl":               "*",
+        "ext-json":               "*",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+        "arcanedev/laravel-html": "~5.0",
+        "phpunit/phpcov":         "~2.0|~3.0",
+        "phpunit/phpunit":        "~4.0|~5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Xiaohuilam\\LuoCaptcha\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Xiaohuilam\\LuoCaptcha\\Tests\\": "tests/"
+        }
+    }
+}
