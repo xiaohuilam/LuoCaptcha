@@ -21,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Xiaohuilam\\LuoCaptcha\\": "src/"
+            "Luosimao\\LuoCaptcha\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Xiaohuilam\\LuoCaptcha\\Tests\\": "tests/"
+            "Luosimao\\LuoCaptcha\\Tests\\": "tests/"
         }
     }
 }
