@@ -1,6 +1,8 @@
 <?php namespace Luosimao\Captcha;
 
-use \ServiceProvider;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 
 /**
  * Class     LuoCaptchaServiceProvider
@@ -8,7 +10,7 @@ use \ServiceProvider;
  * @package  Luosimao\Captcha;
  * @author   XIAOHUI.LAM <xiaohui.lam@gmail.com>
  */
-class LuoCaptchaServiceProvider extends ServiceProvider
+abstract class LuoCaptchaServiceProvider extends IlluminateServiceProvider
 {
     /* ------------------------------------------------------------------------------------------------
      |  Properties
