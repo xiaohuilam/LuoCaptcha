@@ -15,6 +15,14 @@ vim .env
 #NOCAPTCHA_SITEKEY={site key}
 #NOCAPTCHA_SECRET={api key}
 ```
+```
+vim config/app.php
+#add bellow into providers
+Luosimao\Captcha\LuoCaptchaServiceProvider::class,
+
+#add bellow into aliases:
+'Captcha'     => Luosimao\Captcha\LuoCaptcha::class,
+```
 
 # DEMO
 
