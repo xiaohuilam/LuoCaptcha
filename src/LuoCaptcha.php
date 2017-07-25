@@ -14,7 +14,7 @@ class LuoCaptcha{
 
     const VERIFY_URL   = 'https://captcha.luosimao.com/api/site_verify';
 
-    const CAPTCHA_NAME = 'luo-captcha-response';
+    const CAPTCHA_NAME = 'luotest_response';
 
     /* -----------------------------------------------------------------------------------------------
      | 属性
@@ -40,7 +40,7 @@ class LuoCaptcha{
 	 *
 	 * @var boolean
 	 */
-    protected $scriptLoaded = false;
+    protected static $scriptLoaded = false;
 
     /**
      * HTTP Request
@@ -49,30 +49,55 @@ class LuoCaptcha{
      */
     protected $request;
 
-    public function __construct($siteKey, $secret)
+    public function __construct($siteKey = null, $secret = null)
     {
+        if(!$siteKey) $siteKey = getenv('NOCAPTCHA_SITEKEY');
+        if(!$secret) $secret = getenv('NOCAPTCHA_SECRET');
+
         $this->setSecret($secret);
         $this->setSiteKey($siteKey);
     }
 
     public function display($name = null, array $attributes = [])
     {
-        return '<div class="l-captcha" data-site-key="'.$this->getSiteKey().'"></div>';
+        return '<div class="l-captcha" data-site-key="'.$this->getSiteKey().'" data-width="100%;"></div>';
     }
 
-    public function script()
+    public static function script()
     {
         $script = '';
-        if ( ! $this->scriptLoaded) {
+        if ( ! self::$scriptLoaded) {
             $script = '<script src="'.self::CLIENT_URL.'" async defer></script>';
-            $this->scriptLoaded = true;
+            self::$scriptLoaded = true;
         }
         return $script;
     }
 
+    /**
+     * Calls the reCAPTCHA siteverify API to verify whether the user passes CAPTCHA
+     * test using a PSR-7 ServerRequest object.
+     *
+     * @param  \Psr\Http\Message\ServerRequestInterface  $request
+     *
+     * @return bool
+     */
+    public function verifyRequest(ServerRequestInterface $request)
+    {
+        $ip_header = getenv('REQUEST_IP_HEADER', 'REMOTE_ADDR');
+        $body   = $request->getParsedBody();
+        $server = $request->getServerParams();
+        $response = isset($body[self::CAPTCHA_NAME]) ? $body[self::CAPTCHA_NAME] : '';
+        $remoteIp = isset($server[$ip_header]) ? $server[$ip_header] : null;
+
+        return $this->verify($response, $remoteIp);
+    }
+
     public function verify($response, $clientIp = null)
     {
-        if (empty($response)) 
+        if (!$response)
+            $response = $this->request->input[self::CAPTCHA_NAME];
+
+        if (!$response) 
             throw new LuoCaptchaException(LuoCaptchaException::ERR_MSG[LuoCaptchaException::BAD_RESPONSE], LuoCaptchaException::BAD_RESPONSE);
 
         $response = $this->sendVerifyRequest([
@@ -80,6 +105,9 @@ class LuoCaptcha{
             'response' => $response,
             'remoteip' => $clientIp
         ]);
+        if($response['error'] != 0)
+            throw new LuoCaptchaException(LuoCaptchaException::ERR_MSG[$response['error']], $response['error']);
+
         return (isset($response['error']) && (0 === $response['error'])) === true;
     }
 
@@ -129,14 +157,16 @@ class LuoCaptcha{
     protected function sendVerifyRequest($params)
     {
         $client   = new Client();
-        $resposne = $client->send('POST', self::VERIFY_URL, [
-            'form_params' => $params
+        $response = $client->request('POST', self::VERIFY_URL, [
+            'form_params' => $params,
+            'proxy' => 'http://127.0.0.1:8888'
         ]);
-        if($response->getStatusCode != 200)
+        if($response->getStatusCode() != 200)
             throw new LuoCaptchaException(LuoCaptchaException::ERR_MSG[LuoCaptchaException::API_SERVER_FAIL], LuoCaptchaException::API_SERVER_FAIL);
 
         $json = $response->getBody();
         $json = json_decode($json, true);
+
         return $json;
     }
 }

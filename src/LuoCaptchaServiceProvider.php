@@ -10,7 +10,7 @@ use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
  * @package  Luosimao\Captcha;
  * @author   XIAOHUI.LAM <xiaohui.lam@gmail.com>
  */
-abstract class LuoCaptchaServiceProvider extends IlluminateServiceProvider
+class LuoCaptchaServiceProvider extends IlluminateServiceProvider
 {
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -32,10 +32,7 @@ abstract class LuoCaptchaServiceProvider extends IlluminateServiceProvider
      */
     public function register()
     {
-        parent::register();
-
-        $this->registerConfig();
-        $this->registerNoCaptcha();
+        $this->registerLuoCaptcha();
     }
 
     /**
@@ -43,9 +40,8 @@ abstract class LuoCaptchaServiceProvider extends IlluminateServiceProvider
      */
     public function boot()
     {
-        parent::boot();
-
         $this->registerFormMacros($this->app);
+        $this->registerValidatorRules($this->app);
     }
 
     /**
@@ -56,7 +52,7 @@ abstract class LuoCaptchaServiceProvider extends IlluminateServiceProvider
     public function provides()
     {
         return [
-            Contracts\NoCaptcha::class,
+            \Luosimao\Captcha\Utils\Contracts\LuoCaptcha::class,
         ];
     }
 
@@ -69,15 +65,35 @@ abstract class LuoCaptchaServiceProvider extends IlluminateServiceProvider
      */
     private function registerLuoCaptcha()
     {
-        $this->singleton(Contracts\NoCaptcha::class, function($app) {
+        $this->singleton(\Luosimao\Captcha\Utils\Contracts\LuoCaptcha::class, function($app) {
             /** @var  \Illuminate\Contracts\Config\Repository  $config */
             $config = $app['config'];
 
             return new LuoCaptcha(
-                $config->get('no-captcha.secret'),
-                $config->get('no-captcha.sitekey')
+                $config->get('no-captcha.sitekey'),
+                $config->get('no-captcha.secret')
             );
         });
+    }
+
+    /**
+     * Register Validator rules.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     */
+    private function registerValidatorRules($app)
+    {
+        $callback = function($attribute, $value) use ($app) {
+            unset($attribute);
+            $ip = $app['request']->getClientIp();
+            return $app[\Luosimao\Captcha\Utils\Contracts\LuoCaptcha::class]->verify($value, $ip);
+        };
+
+        if ($app->bound('validator')) {
+            $app['validator']->extend('captcha', $callback);
+        } else {
+            \Illuminate\Support\Facades\Validator::extend('captcha', $callback);
+        }
     }
 
     /**
@@ -89,8 +105,13 @@ abstract class LuoCaptchaServiceProvider extends IlluminateServiceProvider
     {
         if ($app->bound('form')) {
             $app['form']->macro('captcha', function($name = null, array $attributes = []) use ($app) {
-                return $app[\Luosimao\Captcha\Utils\Contracts\LuoCaptcha::class]->display($name, $attributes);
+                return $app[\Luosimao\Captcha\LuoCaptcha::class]->display($name, $attributes);
             });
         }
+    }
+
+    protected function singleton($abstract, $concrete = null)
+    {
+        $this->app->singleton($abstract, $concrete);
     }
 }

@@ -1,4 +1,4 @@
-<?php namespace \Luosimao\Captcha\Utils;
+<?php namespace Luosimao\Captcha\Utils;
 
 class LuoCaptchaException extends \Exception{
     const API_SERVER_FAIL = -500;
