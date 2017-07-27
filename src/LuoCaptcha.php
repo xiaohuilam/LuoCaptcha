@@ -159,7 +159,6 @@ class LuoCaptcha{
         $client   = new Client();
         $response = $client->request('POST', self::VERIFY_URL, [
             'form_params' => $params,
-            'proxy' => 'http://127.0.0.1:8888'
         ]);
         if($response->getStatusCode() != 200)
             throw new LuoCaptchaException(LuoCaptchaException::ERR_MSG[LuoCaptchaException::API_SERVER_FAIL], LuoCaptchaException::API_SERVER_FAIL);
