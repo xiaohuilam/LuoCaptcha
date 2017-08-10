@@ -106,7 +106,7 @@ class LuoCaptcha{
             'remoteip' => $clientIp
         ]);
         if($response['error'] != 0)
-            throw new LuoCaptchaException(LuoCaptchaException::ERR_MSG[$response['error']], $response['error']);
+            return false; //throw new LuoCaptchaException(LuoCaptchaException::ERR_MSG[$response['error']], $response['error']);
 
         return (isset($response['error']) && (0 === $response['error'])) === true;
     }
