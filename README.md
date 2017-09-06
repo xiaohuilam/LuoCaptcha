@@ -24,6 +24,24 @@ Luosimao\Captcha\LuoCaptchaServiceProvider::class,
 'Captcha'     => Luosimao\Captcha\LuoCaptcha::class,
 ```
 
+# CODE
+add this into your form
+```
+{!! Form::captcha() !!}
+```
+
+and add this script into your script
+```
+{!! Captcha::script() !!}
+```
+
+add validator
+```
+$this->validate($request, [
+    'luotest_response' => 'required|captcha' : '' ),
+]);
+```
+
 # DEMO
 
 ![11.png](https://i.loli.net/2017/08/01/598044b2eb541.png
