@@ -38,7 +38,7 @@ and add this script into your script
 add validator
 ```
 $this->validate($request, [
-    'luotest_response' => 'required|captcha' : '' ),
+    'luotest_response' => 'required|captcha',
 ]);
 ```
 
